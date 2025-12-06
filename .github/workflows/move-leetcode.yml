@@ -1,0 +1,65 @@
+name: Move LeetCode Solutions
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '[0-9][0-9][0-9][0-9]-*/**'
+
+jobs:
+  move-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0                # 전체 히스토리 가져오기
+          persist-credentials: true     # GITHUB_TOKEN으로 인증 유지
+          ref: ${{ github.ref_name }}   # 현재 브랜치 체크아웃
+
+      - name: Move LeetCode solutions
+        run: |
+          echo "Current directory contents:"
+          ls -la
+
+          mkdir -p LeetCode
+
+          echo "Changed files in this push:"
+          # 안전하게 이전 커밋이 없을 수도 있으니 에러 무시
+          git diff --name-only HEAD^ HEAD || true
+
+          found=0
+          for d in [0-9][0-9][0-9][0-9]-*; do
+            if [ -d "$d" ]; then
+              echo "Moving directory: $d"
+              mv "$d" "LeetCode/" && found=1
+            fi
+          done
+
+          if [ $found -eq 0 ]; then
+            echo "No matching directories found to move"
+          fi
+
+      - name: Commit & Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git status --porcelain | grep .; then
+            # Commit author를 현재 액터로 설정
+            git config --global user.name "${{ github.actor }}"
+            git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+            git add -A
+            git commit -m "chore: Move LeetCode solutions to LeetCode folder" || echo "No changes to commit"
+
+            # 원격의 변경사항을 rebase로 먼저 반영 (충돌 발생 시 워크플로우 실패 — 수동 해결 필요)
+            git pull --rebase origin "${{ github.ref_name }}" || true
+
+            # 현재 브랜치에 푸시
+            git push origin "${{ github.ref_name }}"
+          else
+            echo "No changes to commit"
+          fi
