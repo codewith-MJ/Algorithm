@@ -1,9 +1,1 @@
-const solution = n => {
-    const answer = [];
-    
-    for (let i = 1; i <= n; i+=2) {
-        answer.push(i);
-    }
-    
-    return answer;
-};
+const solution = n => Array.from({length : Math.ceil(n / 2)}, (_, index) => index * 2 + 1);
