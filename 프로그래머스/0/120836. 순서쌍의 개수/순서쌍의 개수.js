@@ -1,19 +1,9 @@
 function solution(n) {
-    const answer = [];
-    let ifMinus = false;
-    
-    for (let i = 1; i <= n; i++) {
-        if (answer.includes(n / i)) {
-            break;
-        }
-        
+    let answer = 0;
+    for (let i = 1; i * i <= n; i++) {
         if (n % i === 0) {
-            answer.push(i);
-            if (n / i === i) {
-                ifMinus = true;
-            }
+            answer += i * i === n ? 1 : 2;
         }
     }
-    
-    return ifMinus ? answer.length * 2 - 1 : answer.length * 2;
+    return answer;
 }
