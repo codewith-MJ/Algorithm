@@ -1,9 +1,9 @@
 function solution(rsp) {
-    const win = {
-        "2" : "0",
-        "0" : "5",
-        "5" : "2"
+    const arr = {
+        2: 0,
+        0: 5,
+        5: 2
     };
     
-    return rsp.split("").reduce((prev, curr) => prev + win[curr], "");
+    return [...rsp].map(value => arr[value]).join("");
 }
