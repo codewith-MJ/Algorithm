@@ -1,4 +1,4 @@
-function solution(letters) {
+function solution(letter) {
     const morse = {
         '.-':'a','-...':'b','-.-.':'c','-..':'d','.':'e','..-.':'f',
         '--.':'g','....':'h','..':'i','.---':'j','-.-':'k','.-..':'l',
@@ -7,11 +7,5 @@ function solution(letters) {
         '-.--':'y','--..':'z'
     };
     
-    let answer = "";
-    
-    for (const letter of letters.split(" ")) {
-        answer += morse[letter];
-    }
-    
-    return answer;
+    return letter.split(" ").reduce((prev, curr) => prev + morse[curr], "");
 }
